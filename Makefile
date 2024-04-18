@@ -11,33 +11,36 @@ endif
 try:
 	${FAILIF_STDERR} bash -c 'exit 12'
 
-all: mkdocs-site build/context.jsonld
-
-build/context.jsonld: src/linkml/schemas/ontology.yaml
-	mkdir -p build
-	gen-jsonld-context \
-		--prefixes \
-		--model \
-		--mergeimports \
-		$< > $@
+all: build/mkdocs-site
 
 build/linkml-docs: \
-	build/linkml-docs/datalad-dataset-components \
-	build/linkml-docs/dataset-version \
-	build/linkml-docs/ontology
-build/linkml-docs/%: src/linkml/schemas/%.yaml src/extra-docs/%-schema
-	export OUTDIR=$$([ "$*" = "ontology" ] && echo $@ || echo build/linkml-docs/schemas/$*) && \
+	build/linkml-docs/s/thing/unreleased \
+	build/linkml-docs/s/prov/unreleased \
+	build/linkml-docs/s/distribution/unreleased \
+	build/linkml-docs/s/datalad-dataset/unreleased \
+	build/linkml-docs/s/sdd/unreleased
+build/linkml-docs/s/%: src/%.yaml src/%/extra-docs
 	gen-doc \
 		--hierarchical-class-view \
 		--include-top-level-diagram \
 		--diagram-type er_diagram \
 		--metadata \
 		--format markdown \
-		--example-directory src/examples/$* \
-		-d $$OUTDIR \
+		--example-directory src/$*/examples/ \
+		-d $@ \
 		$< \
-	&& (cp -r src/extra-docs/$*-schema/*.md $$OUTDIR || true)
+	&& (cp -r src/$*/extra-docs/*.md $@ || true) \
+	&& cp $< $@.yaml
 	# try to inject any extra-docs (if any exist)
+	# generate OWL
+	gen-owl \
+		-f owl \
+		--mergeimports \
+		$< > $@.owl.ttl
+	# jsonld context
+	gen-jsonld-context \
+		--mergeimports \
+		$< > $@.jsonld
 
 build/mkdocs-site: build/linkml-docs src/extra-docs/*.md
 	# top-level content
@@ -48,10 +51,12 @@ check: check-models check-validation
 
 # add additional schemas to lint here
 check-models: \
-	check-model-datalad-dataset-components \
-	check-model-dataset-version \
-	check-model-ontology
-check-model-%: src/linkml/schemas/%.yaml
+	checkmodel/thing/unreleased \
+	checkmodel/prov/unreleased \
+	checkmodel/distribution/unreleased \
+	checkmodel/datalad-dataset/unreleased \
+	checkmodel/sdd/unreleased
+checkmodel/%: src/%.yaml
 	@echo [Check $<]
 	@echo "Run linter"
 	@linkml-lint \
@@ -77,29 +82,36 @@ check-model-%: src/linkml/schemas/%.yaml
 # respective validation targets, because some tests rely on these
 # converted formats
 check-validation: \
-	convert-examples-datalad-dataset-components \
-	check-validation-datalad-dataset-components \
-	convert-examples-dataset-version \
-	check-validation-dataset-version \
-	convert-examples-ontology
-check-validation-%:
-	$(MAKE) check-valid-validation-$* check-invalid-validation-$*
-check-valid-validation-%: tests/%-schema/validation src/linkml/schemas/%.yaml
+	convertexamples/thing/unreleased \
+	checkvalidation/thing/unreleased \
+	convertexamples/prov/unreleased \
+	checkvalidation/prov/unreleased \
+	convertexamples/distribution/unreleased \
+	checkvalidation/distribution/unreleased \
+	convertexamples/datalad-dataset/unreleased \
+	checkvalidation/datalad-dataset/unreleased \
+	convertexamples/sdd/unreleased \
+	checkvalidation/sdd/unreleased
+checkvalidation/%:
+	$(MAKE) checkvalid/$* checkinvalid/$*
+checkvalid/%: src/%/validation src/%.yaml
 	@for ex in $</*.valid.cfg.yaml; do \
 		echo "Validate $$ex" ; \
-		linkml-validate --config "$$ex" ; \
+		linkml-validate --config "$$ex" || exit 5 ; \
 	done
-check-invalid-validation-%: tests/%-schema/validation src/linkml/schemas/%.yaml
+checkinvalid/%: src/%/validation src/%.yaml
 	@for ex in $</*.invalid.cfg.yaml; do \
 		echo "(In)validate $$ex" ; \
-		linkml-validate --config "$$ex" && UNEXPECTEDLY VALID || true; \
+		linkml-validate --config "$$ex" && exit 5 || true; \
 	done
 
 convert-examples: \
-	convert-examples-datalad-dataset-components \
-	convert-examples-dataset-version \
-	convert-examples-ontology
-convert-examples-%: src/linkml/schemas/%.yaml src/examples/%
+	convertexamples/thing/unreleased \
+	convertexamples/prov/unreleased \
+	convertexamples/distribution/unreleased \
+	convertexamples/datalad-dataset/unreleased \
+	convertexamples/sdd/unreleased
+convertexamples/%: src/%.yaml src/%/examples
 	# loop over all examples, skip the schema file itself
 	for ex in $^/*.yaml; do \
 		[ "$$ex" = "$<" ] && continue; \
@@ -127,4 +139,4 @@ clean:
 	rm -rf build
 	rm -f *-stamp
 
-.PHONY: clean check check-models check-examples convert-examples
+.PHONY: clean check check-models check-validation convert-examples

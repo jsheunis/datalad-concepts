@@ -8,8 +8,7 @@ prefixes:
   dcterms: http://purl.org/dc/terms/
   dlco: https://concepts.datalad.org/ontology/
   linkml: https://w3id.org/linkml/
-  iao: http://purl.obolibrary.org/obo/
-  rdfs: http://www.w3.org/2000/01/rdf-schema#
+  RDFS: http://www.w3.org/2000/01/rdf-schema#
   schema: http://schema.org/
   spdx: http://spdx.org/rdf/terms#
   reproduceme: https://w3id.org/reproduceme#
@@ -28,14 +27,6 @@ slots:
     range: Organization
     exact_mappings:
       - schema:affiliation
-
-  citation:
-    slot_uri: dlco:citation
-    description: >-
-      TODO
-    range: string
-    exact_mappings:
-      - schema:citation
 
   cites_as_authority:
     slot_uri: dlco:cites_as_authority
@@ -85,14 +76,12 @@ classes:
     description: >-
       A grant, typically financial or otherwise quantifiable, of resources.
     slots:
-      - identifier
       - sponsor
-      - name
       - cites_as_authority
     exact_mappings:
       - schema:Grant
     todos:
-      - We might also want to support `citation` here to support funder-recommended or funder-required citation forms.
+      - We might also want to support `notation` here to support funder-recommended or funder-required citation forms.
 
   Publication:
     class_uri: dlco:Publication
@@ -101,7 +90,7 @@ classes:
     description: >-
       TODO
     slots:
-      - citation
+      - notation
       - doi
       - url
 

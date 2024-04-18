@@ -22,8 +22,7 @@ prefixes:
   dcterms: http://purl.org/dc/terms/
   dlco: https://concepts.datalad.org/ontology/
   linkml: https://w3id.org/linkml/
-  iao: http://purl.obolibrary.org/obo/
-  ncit: http://purl.obolibrary.org/obo/
+  obo: http://purl.obolibrary.org/obo/
   prov: http://www.w3.org/ns/prov#
   schema: http://schema.org/
 imports:
@@ -105,6 +104,7 @@ slots:
     slot_uri: dlco:is_version_of
     description: >-
       A related resource of which the described resource is a version.
+    range: uriorcurie
     exact_mappings:
       - DCAT:isVersionOf
 
@@ -148,14 +148,6 @@ slots:
     todos:
       - Rename to `named_part`? See also todo for `QualifiedPart`
 
-  type:
-    slot_uri: dlco:type
-    description: >-
-      The nature of the resource.
-    range: string
-    exact_mappings:
-      - dcterms:type
-
   keyword:
     slot_uri: dlco:keyword
     description: >-
@@ -169,6 +161,7 @@ slots:
 classes:
   Resource:
     class_uri: dlco:Resource
+    is_a: Entity
     mixin: true
     description: >-
       Resource published or curated by a single agent.
@@ -176,7 +169,6 @@ classes:
       - description
       - keyword
       - has_part
-      - identifier
       - landing_page
       - license
       - modified
@@ -186,9 +178,9 @@ classes:
       - qualified_part
       - relation
       - title
-      - type
       - version
       - was_attributed_to
+      - was_generated_by
     slot_usage:
       has_part:
         range: Resource
@@ -364,9 +356,9 @@ classes:
       qualified_part:
         range: FileContainerItem
     close_mappings:
-      - ncit:NCIT_C62486
+      - obo:NCIT_C62486
     broad_mappings:
-      - ncit:NCIT_C49057
+      - obo:NCIT_C49057
 
   FileContainerItem:
     class_uri: dlco:FileContainerItem

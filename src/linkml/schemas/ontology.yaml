@@ -16,12 +16,14 @@ prefixes:
 
 imports:
   - ../ontology/checksumming
+  - ../ontology/data
   - ../ontology/datalad
   - ../ontology/datasets
   - ../ontology/git-annex
   - ../ontology/common
   - ../ontology/projects
   - ../ontology/provenance
+  - ../ontology/rdfs
   - ../ontology/schema_utils
   - ../ontology/schema_objects
   - ../ontology/types

@@ -1,0 +1,10 @@
+{
+  "had_role": [
+    "dlprov:is_about"
+  ],
+  "entity": [
+    "https://en.wikipedia.org/wiki/Vulcan_(Star_Trek)#Mind_melds"
+  ],
+  "meta_type": "dlprov:EntityInfluence",
+  "@type": "EntityInfluence"
+}
