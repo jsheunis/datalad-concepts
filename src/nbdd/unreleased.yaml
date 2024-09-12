@@ -8,9 +8,13 @@ comments:
   - ALL CONTENT HERE IS UNRELEASED AND MAY CHANGE ANY TIME
 
 prefixes:
+  linkml: https://w3id.org/linkml/
   nb: http://neurobagel.org/vocab/
 
 default_prefix: nb
+
+imports:
+  - linkml:types
 
 slots:
   TermURL:
@@ -39,7 +43,6 @@ slots:
     multivalued: true
     inlined: true
     inlined_as_list: true
-    unique_values: true
     ifabsent: []
 
   Levels:
@@ -82,9 +85,9 @@ slots:
     description: Semantic annotations.
     any_of:
       - range: CategoricalNeurobagel
-      - rage: ContinuousNeurobagel
-      - rage: IdentifierNeurobagel
-      - rage: ToolNeurobagel
+      - range: ContinuousNeurobagel
+      - range: IdentifierNeurobagel
+      - range: ToolNeurobagel
 
   Units:
     title: Units
@@ -200,10 +203,10 @@ classes:
     title: Identifier
     description: An identifier of a controlled term with an IRI
     slots:
-      - term_url
-      - label
+      - TermURL
+      - Label
     slot_usage:
-      term_url:
+      TermURL:
         required: true
-      label:
+      Label:
         required: true
